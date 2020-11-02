@@ -22,6 +22,8 @@ io.on('connection', (socket) => {
     clickCount++;
     socket.broadcast.emit('click', clickCount);
   });
+
+  socket.emit('connection', clickCount);
 });
 
 setInterval(() => {
