@@ -1,5 +1,15 @@
-const io = require('socket.io')();
 const fs = require('fs');
+const express = require('express');
+const app = express();
+
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
+server.listen(8000);
+
+app.get('/', (req, res) => {
+  res.send('Server is working');
+});
 
 function saveToFile() {
   fs.writeFileSync('./data', clickCount);
@@ -28,6 +38,4 @@ io.on('connection', (socket) => {
 
 setInterval(() => {
   saveToFile();
-}, 30000);
-
-io.listen(3000);
+}, 5000);
