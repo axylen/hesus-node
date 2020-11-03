@@ -7,8 +7,14 @@ const io = require('socket.io')(server);
 
 server.listen(8000);
 
+app.use(express.static(__dirname + '/static'));
+
 app.get('/', (req, res) => {
-  res.send('Server is working');
+  res.send(__dirname + '/static/index.html');
+});
+
+app.get('*', (req, res) => {
+  res.redirect('/');
 });
 
 function saveToFile() {
@@ -36,6 +42,4 @@ io.on('connection', (socket) => {
   socket.emit('connection', clickCount);
 });
 
-setInterval(() => {
-  saveToFile();
-}, 5000);
+setInterval(saveToFile, 5000);
