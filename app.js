@@ -10,7 +10,7 @@ server.listen(8000);
 app.use(express.static(__dirname + '/static'));
 
 app.get('/', (req, res) => {
-  res.send(__dirname + '/static/index.html');
+  res.sendFile(__dirname + '/static/index.html');
 });
 
 app.get('*', (req, res) => {
@@ -18,11 +18,12 @@ app.get('*', (req, res) => {
 });
 
 function saveToFile() {
-  fs.writeFileSync('./data', clickCount);
+  fs.writeFileSync('../hesusappdata', clickCount);
 }
+
 function loadFromFile() {
   try {
-    const res = fs.readFileSync('./data').toString();
+    const res = fs.readFileSync('../hesusappdata').toString();
     return parseInt(res);
   } catch {
     return 0;
