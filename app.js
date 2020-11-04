@@ -12,19 +12,20 @@ const server = require('https').createServer(httpsOptions, app);
 const io = require('socket.io')(server);
 
 server.listen(443);
-
-app.use(express.static(__dirname + '/../frontend'));
+require('http').createServer(app).listen(80);
 
 app.use(function (req, res, next) {
   if (req.secure) {
-    next();
+    return next();
   } else {
-    res.redirect('https://' + req.headers.host + req.url);
+    res.redirect('https://' + req.hostname + req.url);
   }
 });
 
+app.use(express.static(__dirname + '/../client'));
+
 app.get('/', (req, res) => {
-  res.sendFile('index.html', { root: '../frontend' });
+  res.sendFile('index.html', { root: '../client' });
 });
 
 app.get('*', (req, res) => {
@@ -58,6 +59,3 @@ io.on('connection', (socket) => {
 });
 
 setInterval(saveToFile, 5000);
-
-const http = require('http');
-http.createServer(app).listen(80);
