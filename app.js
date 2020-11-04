@@ -1,16 +1,30 @@
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const app = express();
 
-const server = require('http').Server(app);
+const httpsOptions = {
+  key: fs.readFileSync(process.env.SSL_KEY || path.join(__dirname, 'ssl', 'privateKey.key')),
+  cert: fs.readFileSync(process.env.SSL_CERT || path.join(__dirname, 'ssl', 'certificate.crt')),
+};
+
+const server = require('https').createServer(httpsOptions, app);
 const io = require('socket.io')(server);
 
-server.listen(8000);
+server.listen(443);
 
-app.use(express.static(__dirname + '/static'));
+app.use(express.static(__dirname + '/../frontend'));
+
+app.use(function (req, res, next) {
+  if (req.secure) {
+    next();
+  } else {
+    res.redirect('https://' + req.headers.host + req.url);
+  }
+});
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/static/index.html');
+  res.sendFile('index.html', { root: '../frontend' });
 });
 
 app.get('*', (req, res) => {
@@ -44,3 +58,6 @@ io.on('connection', (socket) => {
 });
 
 setInterval(saveToFile, 5000);
+
+const http = require('http');
+http.createServer(app).listen(80);
