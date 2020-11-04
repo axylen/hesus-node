@@ -45,14 +45,46 @@ function loadFromFile() {
   }
 }
 
+function throttle(func, ms) {
+  let isThrottled = false,
+    savedArgs,
+    savedThis;
+
+  function wrapper() {
+    if (isThrottled) {
+      savedArgs = arguments;
+      savedThis = this;
+      return;
+    }
+
+    func.apply(this, arguments);
+
+    isThrottled = true;
+
+    setTimeout(function () {
+      isThrottled = false;
+      if (savedArgs) {
+        wrapper.apply(savedThis, savedArgs);
+        savedArgs = savedThis = null;
+      }
+    }, ms);
+  }
+
+  return wrapper;
+}
+
 let clickCount = loadFromFile();
+
+const updateClick = throttle((socket) => {
+  socket.broadcast.emit('click', clickCount);
+}, 200);
 
 io.on('connection', (socket) => {
   socket.on('click', (count = 1) => {
     if (count < 1 || count > 20) return;
 
     clickCount++;
-    socket.broadcast.emit('click', clickCount);
+    updateClick(socket);
   });
 
   socket.emit('connection', clickCount);
