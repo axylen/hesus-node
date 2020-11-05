@@ -77,7 +77,7 @@ let clickCount = loadFromFile();
 
 const updateClick = throttle((socket) => {
   socket.broadcast.emit('click', clickCount);
-}, 2000);
+}, 200);
 
 const updateUserCount = throttle(() => {
   io.sockets.emit('updateUserCount', io.engine.clientsCount);
