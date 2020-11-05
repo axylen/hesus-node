@@ -80,11 +80,15 @@ const updateClick = throttle((socket) => {
 }, 200);
 
 io.on('connection', (socket) => {
+  const click = throttle((count) => {
+    clickCount++;
+    updateClick(socket);
+  }, 50);
+
   socket.on('click', (count = 1) => {
     if (count < 1 || count > 20) return;
 
-    clickCount++;
-    updateClick(socket);
+    click(count);
   });
 
   socket.emit('connection', clickCount);
