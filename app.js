@@ -45,7 +45,7 @@ function loadFromFile() {
   }
 }
 
-function throttle(func, ms) {
+function throttle(func, ms = 100) {
   let isThrottled = false,
     savedArgs,
     savedThis;
@@ -77,7 +77,11 @@ let clickCount = loadFromFile();
 
 const updateClick = throttle((socket) => {
   socket.broadcast.emit('click', clickCount);
-}, 200);
+}, 2000);
+
+const updateUserCount = throttle(() => {
+  io.sockets.emit('updateUserCount', io.engine.clientsCount);
+}, 500);
 
 io.on('connection', (socket) => {
   const click = throttle((count) => {
@@ -91,7 +95,10 @@ io.on('connection', (socket) => {
     click(count);
   });
 
+  socket.on('disconnect', updateUserCount);
+
   socket.emit('connection', clickCount);
+  updateUserCount();
 });
 
 setInterval(saveToFile, 5000);
