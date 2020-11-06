@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const app = express();
-//dd
+
 const httpsOptions = {
   key: fs.readFileSync(process.env.SSL_KEY || path.join(__dirname, 'ssl', 'privateKey.key')),
   cert: fs.readFileSync(process.env.SSL_CERT || path.join(__dirname, 'ssl', 'certificate.crt')),
